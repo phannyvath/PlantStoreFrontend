@@ -111,8 +111,16 @@ async function confirmDelete(password) {
   if (!selectedUser.value) return
   deleting.value = true
   try {
-    await api.delete(`/users/${selectedUser.value.id}`, {
-      data: { password },
+    const trimmedPassword = password.trim()
+    if (!trimmedPassword) {
+      alert('Password is required')
+      return
+    }
+    
+    // Use POST with a delete action instead of DELETE to ensure body is sent
+    // Some servers/clients don't handle DELETE request bodies well
+    await api.post(`/users/${selectedUser.value.id}/delete`, {
+      password: trimmedPassword,
     })
     await loadUsers()
     showDeleteModal.value = false
