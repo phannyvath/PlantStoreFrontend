@@ -82,11 +82,17 @@ async function confirmPermanentDelete() {
 async function downloadReceipt(orderId) {
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch(`/api/orders/${orderId}/receipt`, {
+    // Use the API base URL from axios config
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
+    const receiptUrl = `${API_BASE_URL}/orders/${orderId}/receipt`
+    
+    const response = await fetch(receiptUrl, {
       headers: { Authorization: `Bearer ${token}` },
     })
     if (!response.ok) {
-      alert('Could not download receipt')
+      const errorText = await response.text()
+      console.error('Receipt download error:', errorText)
+      alert('Could not download receipt. Please try again.')
       return
     }
     const blob = await response.blob()
@@ -99,7 +105,8 @@ async function downloadReceipt(orderId) {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
   } catch (e) {
-    alert('Failed to download receipt')
+    console.error('Receipt download failed:', e)
+    alert('Failed to download receipt. Please check your connection.')
   }
 }
 
