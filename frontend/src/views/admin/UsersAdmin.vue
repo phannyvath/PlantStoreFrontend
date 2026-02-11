@@ -1,12 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import api from '../../api/axios'
 import ConfirmModal from '../../components/ConfirmModal.vue'
 import PasswordConfirmModal from '../../components/PasswordConfirmModal.vue'
 import { Ban, Trash2, UserPlus, Unlock } from 'lucide-vue-next'
 
 const router = useRouter()
+const auth = useAuthStore()
 const users = ref([])
 const loading = ref(true)
 const showBlockModal = ref(false)
@@ -18,6 +20,11 @@ const deleting = ref(false)
 const blocking = ref(false)
 
 onMounted(async () => {
+  // Protect route at component level
+  if (!auth.isLoggedIn || !auth.isAdmin) {
+    router.push({ name: 'home' })
+    return
+  }
   await loadUsers()
 })
 

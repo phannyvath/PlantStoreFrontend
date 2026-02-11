@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import api from '../../api/axios'
 import ConfirmModal from '../../components/ConfirmModal.vue'
 import { Phone, Facebook, Instagram, ExternalLink, Pencil, Trash2, Download } from 'lucide-vue-next'
 
 const router = useRouter()
+const auth = useAuthStore()
 const orders = ref([])
 const loading = ref(true)
 const updating = ref(null)
@@ -15,6 +17,12 @@ const showPermanentDeleteModal = ref(false)
 const orderToDelete = ref(null)
 
 onMounted(async () => {
+  // Protect route at component level
+  if (!auth.isLoggedIn || !auth.isAdmin) {
+    router.push({ name: 'home' })
+    return
+  }
+  
   try {
     const { data } = await api.get('/orders/all')
     orders.value = data.data || []

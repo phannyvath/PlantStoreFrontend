@@ -1,11 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import api from '../../api/axios'
 import { ArrowLeft } from 'lucide-vue-next'
 
 const router = useRouter()
+const auth = useAuthStore()
 const saving = ref(false)
+
+onMounted(() => {
+  // Protect route at component level
+  if (!auth.isLoggedIn || !auth.isAdmin) {
+    router.push({ name: 'home' })
+  }
+})
 const form = ref({
   name: '',
   category: 'Indoor',

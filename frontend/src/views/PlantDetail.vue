@@ -19,6 +19,12 @@ const deleting = ref(false)
 const id = computed(() => route.params.id)
 
 onMounted(async () => {
+  // Protect route at component level
+  if (!auth.isLoggedIn) {
+    router.push({ name: 'login', query: { redirect: `/plants/${id.value}` } })
+    return
+  }
+  
   try {
     const { data } = await api.get(`/plants/${id.value}`)
     plant.value = data.data

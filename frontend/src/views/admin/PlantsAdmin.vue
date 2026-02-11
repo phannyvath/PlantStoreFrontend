@@ -1,11 +1,24 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import api from '../../api/axios'
 import PlantCard from '../../components/PlantCard.vue'
 import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
 
+const router = useRouter()
+const auth = useAuthStore()
 const plants = ref([])
 const loading = ref(true)
+
+onMounted(async () => {
+  // Protect route at component level
+  if (!auth.isLoggedIn || !auth.isAdmin) {
+    router.push({ name: 'home' })
+    return
+  }
+  await load()
+})
 
 async function load() {
   try {
@@ -18,7 +31,6 @@ async function load() {
   }
 }
 
-onMounted(load)
 
 async function remove(id) {
   if (!confirm('Delete this plant?')) return

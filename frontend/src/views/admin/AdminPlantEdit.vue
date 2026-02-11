@@ -1,11 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import api from '../../api/axios'
 import { ArrowLeft, Trash2 } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 const plantId = computed(() => route.params.id)
 const plant = ref(null)
 const loading = ref(true)
@@ -21,6 +23,12 @@ const form = ref({
 })
 
 onMounted(async () => {
+  // Protect route at component level
+  if (!auth.isLoggedIn || !auth.isAdmin) {
+    router.push({ name: 'home' })
+    return
+  }
+  
   try {
     const { data } = await api.get(`/plants/${plantId.value}`)
     plant.value = data.data

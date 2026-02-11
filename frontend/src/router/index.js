@@ -22,11 +22,25 @@ const routes = [
 
 const router = createRouter({ history: createWebHistory(), routes })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   document.title = to.meta.title ? `${to.meta.title} — Forest Plant Store` : 'Forest Plant Store'
   const auth = useAuthStore()
-  if (to.meta.requiresAuth && !auth.isLoggedIn) return next({ name: 'login', query: { redirect: to.fullPath } })
-  if (to.meta.admin && !auth.isAdmin) return next({ name: 'home' })
+  
+  // If route requires authentication and user is not logged in, redirect to login
+  if (to.meta.requiresAuth && !auth.isLoggedIn) {
+    return next({ name: 'login', query: { redirect: to.fullPath } })
+  }
+  
+  // If route requires admin and user is not admin, redirect to home
+  if (to.meta.admin && !auth.isAdmin) {
+    return next({ name: 'home' })
+  }
+  
+  // If user is already logged in and tries to access login/register, redirect to home
+  if (auth.isLoggedIn && (to.name === 'login' || to.name === 'register')) {
+    return next({ name: 'home' })
+  }
+  
   next()
 })
 

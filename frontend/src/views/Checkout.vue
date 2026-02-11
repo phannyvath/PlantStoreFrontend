@@ -26,6 +26,12 @@ const SOCIAL_TYPES = [
 const total = computed(() => cart.total)
 
 onMounted(() => {
+  // Protect route at component level
+  if (!auth.isLoggedIn) {
+    router.push({ name: 'login', query: { redirect: '/checkout' } })
+    return
+  }
+  
   if (cart.items.length === 0) {
     router.push('/plants')
   }

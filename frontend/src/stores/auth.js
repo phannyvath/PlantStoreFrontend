@@ -4,19 +4,40 @@ import api from '../api/axios'
 export const useAuthStore = defineStore('auth', {
   state: () => {
     let user = null
-    try {
-      const raw = localStorage.getItem('user')
-      user = raw ? JSON.parse(raw) : null
-    } catch {
-      user = null
+    let token = null
+    
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('user')
+        user = raw ? JSON.parse(raw) : null
+        token = localStorage.getItem('token')
+        
+        // If token exists but user data is missing, clear both (invalid state)
+        if (token && !user) {
+          localStorage.removeItem('token')
+          token = null
+        }
+        // If user exists but token is missing, clear user (invalid state)
+        if (user && !token) {
+          localStorage.removeItem('user')
+          user = null
+        }
+      } catch {
+        // If parsing fails, clear corrupted data
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+        user = null
+        token = null
+      }
     }
+    
     return {
-      token: typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null,
+      token,
       user,
     }
   },
   getters: {
-    isLoggedIn: (state) => !!state.token,
+    isLoggedIn: (state) => !!state.token && !!state.user,
     isAdmin: (state) => state.user?.role === 'admin',
     userRole: (state) => state.user?.role,
   },

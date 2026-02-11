@@ -28,6 +28,12 @@ const SOCIAL_TYPES = [
 const total = computed(() => items.value.reduce((sum, item) => sum + item.price * item.quantity, 0))
 
 onMounted(async () => {
+  // Protect route at component level
+  if (!auth.isLoggedIn) {
+    router.push({ name: 'login', query: { redirect: `/orders/${route.params.id}/edit` } })
+    return
+  }
+  
   try {
     const { data } = await api.get(`/orders/${route.params.id}`)
     order.value = data.data

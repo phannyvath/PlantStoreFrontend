@@ -1,7 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 import api from '../../api/axios'
 import { DollarSign, ShoppingCart, Users, Package, TrendingUp, UserCheck, UserX, Clock, CheckCircle, Truck, Ban } from 'lucide-vue-next'
+
+const router = useRouter()
+const auth = useAuthStore()
 
 const stats = ref({
   totalSales: 0,
@@ -20,6 +25,12 @@ const stats = ref({
 const loading = ref(true)
 
 onMounted(async () => {
+  // Protect route at component level
+  if (!auth.isLoggedIn || !auth.isAdmin) {
+    router.push({ name: 'home' })
+    return
+  }
+  
   try {
     const { data } = await api.get('/dashboard/stats')
     stats.value = data.data || stats.value

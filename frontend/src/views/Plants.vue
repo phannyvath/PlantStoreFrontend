@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import api from '../api/axios'
 import { useAuthStore } from '../stores/auth'
 import PlantCard from '../components/PlantCard.vue'
 import { Filter } from 'lucide-vue-next'
 
+const router = useRouter()
 const auth = useAuthStore()
 const plants = ref([])
 const loading = ref(true)
@@ -38,7 +40,13 @@ function setVisible(index) {
   if (!visible.value.includes(index)) visible.value = [...visible.value, index]
 }
 
+// Protect route at component level
 onMounted(async () => {
+  if (!auth.isLoggedIn) {
+    router.push({ name: 'login', query: { redirect: '/plants' } })
+    return
+  }
+  
   try {
     const { data } = await api.get('/plants')
     plants.value = data.data || []
