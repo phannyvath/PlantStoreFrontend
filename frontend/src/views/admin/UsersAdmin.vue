@@ -111,16 +111,17 @@ async function confirmDelete(password) {
   if (!selectedUser.value) return
   deleting.value = true
   try {
-    const trimmedPassword = password.trim()
-    if (!trimmedPassword) {
+    // Don't trim - match login behavior exactly (login doesn't trim)
+    if (!password) {
       alert('Password is required')
       return
     }
     
     // Use POST with a delete action instead of DELETE to ensure body is sent
     // Some servers/clients don't handle DELETE request bodies well
+    // Pass password as-is (no trimming) to match login behavior
     await api.post(`/users/${selectedUser.value.id}/delete`, {
-      password: trimmedPassword,
+      password: password,
     })
     await loadUsers()
     showDeleteModal.value = false
@@ -220,6 +221,7 @@ async function confirmDelete(password) {
                   <Unlock class="h-4 w-4" stroke-width="1.5" />
                 </button>
                 <button
+                  v-if="u.id !== auth.user?.id"
                   type="button"
                   class="rounded-lg p-2 transition-opacity hover:opacity-90 disabled:opacity-50"
                   style="color: #b91c1c;"
@@ -229,6 +231,14 @@ async function confirmDelete(password) {
                 >
                   <Trash2 class="h-4 w-4" stroke-width="1.5" />
                 </button>
+                <span
+                  v-else
+                  class="rounded-lg p-2 text-xs opacity-50"
+                  style="color: var(--color-text-muted);"
+                  title="You cannot delete your own account"
+                >
+                  (You)
+                </span>
               </div>
             </td>
           </tr>
@@ -309,7 +319,7 @@ async function confirmDelete(password) {
     <PasswordConfirmModal
       :show="showDeleteModal"
       title="Delete User"
-      :message="`Are you sure you want to permanently delete ${selectedUser?.email}? This action cannot be undone. Please enter your password to confirm.`"
+      :message="`Are you sure you want to permanently delete ${selectedUser?.email}? This action cannot be undone. Please enter YOUR password (for ${auth.user?.email || 'your account'}) to confirm.`"
       confirm-text="Delete User"
       cancel-text="Cancel"
       :danger="true"

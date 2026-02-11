@@ -18,14 +18,15 @@ const showPassword = ref(false)
 const error = ref('')
 
 function handleConfirm() {
-  const trimmedPassword = password.value.trim()
-  if (!trimmedPassword) {
+  // Don't trim - match login behavior exactly (login doesn't trim)
+  // This ensures password comparison works the same way as login
+  if (!password.value) {
     error.value = 'Password is required'
     return
   }
   error.value = ''
-  // Send trimmed password to avoid whitespace issues
-  emit('confirm', trimmedPassword)
+  // Send password as-is (no trimming) to match login behavior
+  emit('confirm', password.value)
   password.value = ''
 }
 
