@@ -3,6 +3,16 @@ import axios from 'axios'
 // Use environment variable for API URL, fallback to relative path for development
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
+// Debug: Always log the API URL being used (helps debug production issues)
+console.log('🔧 API Base URL:', API_BASE_URL)
+console.log('🔧 VITE_API_URL env:', import.meta.env.VITE_API_URL || 'NOT SET')
+
+// Warn if using relative path in production
+if (API_BASE_URL === '/api') {
+  console.warn('⚠️ WARNING: Using relative API path (/api). This will not work in production!')
+  console.warn('⚠️ Set VITE_API_URL environment variable in Vercel to: https://backendpstore.onrender.com/api')
+}
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
