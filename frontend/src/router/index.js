@@ -18,6 +18,13 @@ const routes = [
   { path: '/admin/orders', name: 'admin-orders', component: () => import('../views/admin/OrdersAdmin.vue'), meta: { title: 'Manage Orders', requiresAuth: true, admin: true } },
   { path: '/admin/users', name: 'admin-users', component: () => import('../views/admin/UsersAdmin.vue'), meta: { title: 'Manage Users', requiresAuth: true, admin: true } },
   { path: '/admin/users/new', name: 'admin-user-new', component: () => import('../views/admin/AdminUserNew.vue'), meta: { title: 'Create User', requiresAuth: true, admin: true } },
+  // Catch-all route: redirect any unmatched paths to landing page
+  { 
+    path: '/:pathMatch(.*)*', 
+    name: 'not-found', 
+    redirect: { name: 'home' },
+    meta: { title: 'Page Not Found' }
+  },
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })
@@ -25,6 +32,11 @@ const router = createRouter({ history: createWebHistory(), routes })
 router.beforeEach(async (to, _from, next) => {
   document.title = to.meta.title ? `${to.meta.title} — Forest Plant Store` : 'Forest Plant Store'
   const auth = useAuthStore()
+  
+  // Handle unmatched routes (404) - redirect to landing page
+  if (to.name === 'not-found') {
+    return next({ name: 'home', replace: true })
+  }
   
   // If route requires authentication and user is not logged in, redirect to login
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
@@ -42,6 +54,13 @@ router.beforeEach(async (to, _from, next) => {
   }
   
   next()
+})
+
+// Handle navigation errors (e.g., 404s)
+router.onError((error) => {
+  console.error('Router error:', error)
+  // Redirect to home on any navigation error
+  router.push({ name: 'home', replace: true }).catch(() => {})
 })
 
 export default router
