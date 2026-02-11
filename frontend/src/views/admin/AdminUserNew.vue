@@ -3,11 +3,13 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import api from '../../api/axios'
-import { ArrowLeft, UserPlus } from 'lucide-vue-next'
+import { ArrowLeft, UserPlus, Eye, EyeOff } from 'lucide-vue-next'
 
 const router = useRouter()
 const auth = useAuthStore()
 const saving = ref(false)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 onMounted(() => {
   // Protect route at component level
@@ -91,29 +93,51 @@ async function submit() {
           <label class="mb-2 block text-sm font-medium" style="color: var(--color-text-dark);">
             Password <span style="color: #dc2626;">*</span>
           </label>
-          <input
-            v-model="form.password"
-            type="password"
-            required
-            minlength="6"
-            class="input-focus w-full rounded-xl border border-black/10 px-4 py-2.5 text-sm dark:border-white/10 dark:bg-white/5"
-            style="color: var(--color-text);"
-            placeholder="At least 6 characters"
-          />
+          <div class="relative">
+            <input
+              v-model="form.password"
+              :type="showPassword ? 'text' : 'password'"
+              required
+              minlength="6"
+              class="input-focus w-full rounded-xl border border-black/10 px-4 pr-10 py-2.5 text-sm dark:border-white/10 dark:bg-white/5"
+              style="color: var(--color-text);"
+              placeholder="At least 6 characters"
+            />
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-opacity hover:opacity-70"
+              style="color: var(--color-text-muted);"
+              @click="showPassword = !showPassword"
+            >
+              <Eye v-if="!showPassword" class="h-4 w-4" stroke-width="1.5" />
+              <EyeOff v-else class="h-4 w-4" stroke-width="1.5" />
+            </button>
+          </div>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium" style="color: var(--color-text-dark);">
             Confirm Password <span style="color: #dc2626;">*</span>
           </label>
-          <input
-            v-model="form.confirmPassword"
-            type="password"
-            required
-            minlength="6"
-            class="input-focus w-full rounded-xl border border-black/10 px-4 py-2.5 text-sm dark:border-white/10 dark:bg-white/5"
-            style="color: var(--color-text);"
-            placeholder="Confirm password"
-          />
+          <div class="relative">
+            <input
+              v-model="form.confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              required
+              minlength="6"
+              class="input-focus w-full rounded-xl border border-black/10 px-4 pr-10 py-2.5 text-sm dark:border-white/10 dark:bg-white/5"
+              style="color: var(--color-text);"
+              placeholder="Confirm password"
+            />
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-opacity hover:opacity-70"
+              style="color: var(--color-text-muted);"
+              @click="showConfirmPassword = !showConfirmPassword"
+            >
+              <Eye v-if="!showConfirmPassword" class="h-4 w-4" stroke-width="1.5" />
+              <EyeOff v-else class="h-4 w-4" stroke-width="1.5" />
+            </button>
+          </div>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium" style="color: var(--color-text-dark);">

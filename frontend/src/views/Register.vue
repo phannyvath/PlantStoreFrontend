@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import api from '../api/axios'
+import { Eye, EyeOff } from 'lucide-vue-next'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -10,6 +11,8 @@ const name = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 const error = ref('')
 const loading = ref(false)
 
@@ -67,25 +70,47 @@ async function submit() {
         </div>
         <div>
           <label for="password" class="block text-sm font-medium" style="color: var(--color-text);">Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            required
-            class="input-focus mt-2 w-full rounded-xl px-4 py-3"
-            style="color: var(--color-text);"
-          />
+          <div class="relative mt-2">
+            <input
+              id="password"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              required
+              class="input-focus w-full rounded-xl px-4 py-3 pr-12"
+              style="color: var(--color-text);"
+            />
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-opacity hover:opacity-70"
+              style="color: var(--color-text-muted);"
+              @click="showPassword = !showPassword"
+            >
+              <Eye v-if="!showPassword" class="h-5 w-5" stroke-width="1.5" />
+              <EyeOff v-else class="h-5 w-5" stroke-width="1.5" />
+            </button>
+          </div>
         </div>
         <div>
           <label for="confirmPassword" class="block text-sm font-medium" style="color: var(--color-text);">Confirm password</label>
-          <input
-            id="confirmPassword"
-            v-model="confirmPassword"
-            type="password"
-            required
-            class="input-focus mt-2 w-full rounded-xl px-4 py-3"
-            style="color: var(--color-text);"
-          />
+          <div class="relative mt-2">
+            <input
+              id="confirmPassword"
+              v-model="confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              required
+              class="input-focus w-full rounded-xl px-4 py-3 pr-12"
+              style="color: var(--color-text);"
+            />
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-opacity hover:opacity-70"
+              style="color: var(--color-text-muted);"
+              @click="showConfirmPassword = !showConfirmPassword"
+            >
+              <Eye v-if="!showConfirmPassword" class="h-5 w-5" stroke-width="1.5" />
+              <EyeOff v-else class="h-5 w-5" stroke-width="1.5" />
+            </button>
+          </div>
         </div>
         <p v-if="error" class="text-sm text-red-500">{{ error }}</p>
         <button

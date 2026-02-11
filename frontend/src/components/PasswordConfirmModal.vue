@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { X, Lock } from 'lucide-vue-next'
+import { X, Lock, Eye, EyeOff } from 'lucide-vue-next'
 
 const props = defineProps({
   show: Boolean,
@@ -14,6 +14,7 @@ const props = defineProps({
 const emit = defineEmits(['confirm', 'cancel', 'close'])
 
 const password = ref('')
+const showPassword = ref(false)
 const error = ref('')
 
 function handleConfirm() {
@@ -80,12 +81,21 @@ function handleClose() {
             <Lock class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style="color: var(--color-text-muted);" stroke-width="1.5" />
             <input
               v-model="password"
-              type="password"
-              class="input-focus w-full rounded-xl border border-black/10 px-10 py-2.5 text-sm dark:border-white/10 dark:bg-white/5"
-              style="color: var(--color-text);"
+              :type="showPassword ? 'text' : 'password'"
+              class="input-focus w-full rounded-xl border border-black/10 px-10 pr-10 py-2.5 text-sm dark:border-white/10 dark:bg-white/5"
+              style="color: var(--color-text); padding-right: 2.75rem;"
               placeholder="Enter your password"
               @keyup.enter="handleConfirm"
             />
+            <button
+              type="button"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-opacity hover:opacity-70"
+              style="color: var(--color-text-muted);"
+              @click="showPassword = !showPassword"
+            >
+              <Eye v-if="!showPassword" class="h-4 w-4" stroke-width="1.5" />
+              <EyeOff v-else class="h-4 w-4" stroke-width="1.5" />
+            </button>
           </div>
           <p v-if="error" class="mt-2 text-sm" style="color: #dc2626;">{{ error }}</p>
         </div>
