@@ -17,12 +17,14 @@ const password = ref('')
 const error = ref('')
 
 function handleConfirm() {
-  if (!password.value.trim()) {
+  const trimmedPassword = password.value.trim()
+  if (!trimmedPassword) {
     error.value = 'Password is required'
     return
   }
   error.value = ''
-  emit('confirm', password.value)
+  // Send trimmed password to avoid whitespace issues
+  emit('confirm', trimmedPassword)
   password.value = ''
 }
 

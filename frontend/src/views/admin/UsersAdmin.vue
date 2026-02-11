@@ -118,7 +118,9 @@ async function confirmDelete(password) {
     showDeleteModal.value = false
     selectedUser.value = null
   } catch (e) {
-    alert(e.response?.data?.error || 'Failed to delete user')
+    const errorMsg = e.response?.data?.error || e.message || 'Failed to delete user'
+    alert(errorMsg)
+    console.error('Delete user error:', e.response?.data || e.message)
   } finally {
     deleting.value = false
   }
