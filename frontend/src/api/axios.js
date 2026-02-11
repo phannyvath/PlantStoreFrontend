@@ -18,9 +18,15 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     // Handle network errors (backend not available)
-    if (!err.response && err.message === 'Network Error') {
-      console.warn('Backend API is not available. Please check your API configuration.')
-      // Don't redirect on network errors - let the UI handle it gracefully
+    if (!err.response) {
+      if (err.message === 'Network Error' || err.code === 'ERR_NETWORK') {
+        const errorMessage = API_BASE_URL === '/api' 
+          ? 'Backend API is not configured. Please set VITE_API_URL environment variable.'
+          : `Cannot connect to backend at ${API_BASE_URL}. Please check your API configuration.`
+        console.error(errorMessage)
+        // Return a more descriptive error
+        return Promise.reject(new Error(errorMessage))
+      }
       return Promise.reject(err)
     }
     

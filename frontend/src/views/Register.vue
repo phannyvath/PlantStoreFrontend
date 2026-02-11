@@ -25,7 +25,11 @@ async function submit() {
     auth.setAuth(data.data.token, data.data.user)
     router.push('/plants')
   } catch (e) {
-    error.value = e.response?.data?.error || 'Registration failed'
+    if (e.message && e.message.includes('Backend API')) {
+      error.value = 'Backend is not configured. Please contact administrator.'
+    } else {
+      error.value = e.response?.data?.error || e.message || 'Registration failed'
+    }
   } finally {
     loading.value = false
   }
