@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light mode (default) – warm, natural, easy on the eyes */
+:root {
+  --color-forest: #2d7a5a;
+  --color-soil: #9a6b45;
+  --color-accent: #2e8dd4;
+  --color-background: #f6f9f6;
+  --color-text: #1c2822;
+  --color-text-muted: rgba(28, 40, 34, 0.78);
+  --color-navbar-bg: rgba(255, 255, 255, 0.92);
+  --color-card-bg: #e8f2ed;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 2px 12px rgba(45, 122, 90, 0.06);
+  --shadow-soft: 0 4px 20px rgba(45, 122, 90, 0.08);
+  /* Dashboard cards: same as card in light mode */
+  --color-dashboard-card-bg: #e8f2ed;
+  --color-dashboard-title: #2d7a5a;
+  --color-dashboard-text: #1c2822;
+}
+
+/* Dark mode - use html.dark so class on <html> updates all variables */
+html.dark {
+  --color-forest: #4da67a;
+  --color-soil: #c49a6c;
+  --color-accent: #6bb3f0;
+  --color-background: #1a241f;
+  --color-text: #e8f0ec;
+  --color-text-muted: rgba(232, 240, 236, 0.9);
+  --color-navbar-bg: rgba(26, 36, 31, 0.97);
+  --color-card-bg: #1e2e26;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.25);
+  /* Dashboard cards: keep dark green in dark mode */
+  --color-dashboard-card-bg: #1e2e26;
+  --color-dashboard-title: #6fcf97;
+  --color-dashboard-text: #e8f0ec;
+}
+
+/* Legacy alias so existing var(--color-text-dark) still works */
+:root,
+html.dark {
+  --color-text-dark: var(--color-text);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.4s ease, color 0.3s ease;
+  }
+}
+
+.font-serif {
+  font-family: 'Libre Baskerville', Georgia, serif;
+}
+
+/* Global card style */
+.card {
+  background-color: var(--color-card-bg);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.4s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-soft);
+}
+
+/* Admin dashboard cards: theme-aware (light green in light mode, dark green in dark) */
+.dashboard-card {
+  background-color: var(--color-dashboard-card-bg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+}
+.dashboard-card:hover {
+  box-shadow: var(--shadow-soft);
+}
+
+/* Primary button - forest green, soft glow on hover */
+.btn-primary {
+  background-color: var(--color-forest);
+  color: white;
+  border-radius: 9999px;
+  font-weight: 500;
+  transition: box-shadow 0.3s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(47, 107, 79, 0.35);
+  transform: scale(1.02);
+}
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Input focus - blue highlight */
+.input-focus {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.input-focus:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(58, 141, 222, 0.2);
+}
+
+/* Nav link hover underline */
+.nav-link {
+  position: relative;
+  color: var(--color-text-muted);
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: var(--color-forest);
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after,
+.nav-link.router-link-active::after {
+  width: 100%;
+}
+
+/* Page transition */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* Floating leaves */
+.leaf-float {
+  animation: float 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(4deg); }
+}
+
+/* Parallax layer */
+.parallax-layer {
+  will-change: transform;
+}
