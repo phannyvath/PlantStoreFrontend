@@ -21,7 +21,7 @@ const routes = [
   // Catch-all route: redirect any unmatched paths to landing page
   { 
     path: '/:pathMatch(.*)*', 
-    name: 'not-found', 
+    name: 'not-found',
     redirect: { name: 'home' },
     meta: { title: 'Page Not Found' }
   },
@@ -30,13 +30,15 @@ const routes = [
 const router = createRouter({ history: createWebHistory(), routes })
 
 router.beforeEach(async (to, _from, next) => {
-  document.title = to.meta.title ? `${to.meta.title} — Forest Plant Store` : 'Forest Plant Store'
-  const auth = useAuthStore()
-  
-  // Handle unmatched routes (404) - redirect to landing page
-  if (to.name === 'not-found') {
+  // Handle unmatched routes (404) FIRST - redirect to landing page immediately
+  if (to.name === 'not-found' || !to.matched.length) {
     return next({ name: 'home', replace: true })
   }
+  
+  const auth = useAuthStore()
+  
+  // Set document title
+  document.title = to.meta.title ? `${to.meta.title} — Forest Plant Store` : 'Forest Plant Store'
   
   // If route requires authentication and user is not logged in, redirect to login
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
@@ -45,12 +47,12 @@ router.beforeEach(async (to, _from, next) => {
   
   // If route requires admin and user is not admin, redirect to home
   if (to.meta.admin && !auth.isAdmin) {
-    return next({ name: 'home' })
+    return next({ name: 'home', replace: true })
   }
   
   // If user is already logged in and tries to access login/register, redirect to home
   if (auth.isLoggedIn && (to.name === 'login' || to.name === 'register')) {
-    return next({ name: 'home' })
+    return next({ name: 'home', replace: true })
   }
   
   next()
