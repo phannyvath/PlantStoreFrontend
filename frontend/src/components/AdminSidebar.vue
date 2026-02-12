@@ -1,16 +1,33 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { LayoutDashboard, Leaf, Package, Users, Sun, Moon, LogOut } from 'lucide-vue-next'
+import { LayoutDashboard, Leaf, Package, Users, Sun, Moon, LogOut, Maximize2, Minimize2 } from 'lucide-vue-next'
 
 const route = useRoute()
 const auth = useAuthStore()
 const dark = ref(false)
+const isFullscreen = ref(false)
 
 onMounted(() => {
   dark.value = localStorage.getItem('theme') === 'dark'
+  document.addEventListener('fullscreenchange', updateFullscreenState)
 })
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', updateFullscreenState)
+})
+
+function updateFullscreenState() {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().then(updateFullscreenState).catch(() => {})
+  } else {
+    document.exitFullscreen().then(updateFullscreenState).catch(() => {})
+  }
+}
 
 function toggleDark() {
   dark.value = !dark.value
@@ -64,6 +81,17 @@ function isActive(path) {
       <button
         type="button"
         class="sidebar-link flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm"
+        style="color: var(--color-text-muted);"
+        aria-label="Toggle full screen"
+        @click="toggleFullscreen"
+      >
+        <Minimize2 v-if="isFullscreen" class="h-5 w-5 shrink-0" stroke-width="1.5" />
+        <Maximize2 v-else class="h-5 w-5 shrink-0" stroke-width="1.5" />
+        {{ isFullscreen ? 'Exit full screen' : 'Full screen' }}
+      </button>
+      <button
+        type="button"
+        class="sidebar-link mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm"
         style="color: var(--color-text-muted);"
         aria-label="Toggle theme"
         @click="toggleDark"
