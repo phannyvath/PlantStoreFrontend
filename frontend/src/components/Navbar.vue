@@ -1,20 +1,25 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useCartStore } from '../stores/cart'
-import { Sun, Moon, ShoppingCart } from 'lucide-vue-next'
+import { Sun, Moon, ShoppingCart, Maximize2, Minimize2 } from 'lucide-vue-next'
 
 const route = useRoute()
 const auth = useAuthStore()
 const cart = useCartStore()
 const open = ref(false)
 const dark = ref(false)
+const isFullscreen = ref(false)
 
 onMounted(() => {
   dark.value = localStorage.getItem('theme') === 'dark'
   if (dark.value) document.documentElement.classList.add('dark')
   else document.documentElement.classList.remove('dark')
+  document.addEventListener('fullscreenchange', updateFullscreenState)
+})
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', updateFullscreenState)
 })
 
 const guestLinks = [
@@ -59,6 +64,19 @@ function toggleDark() {
     localStorage.setItem('theme', 'light')
   }
 }
+
+function updateFullscreenState() {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().then(updateFullscreenState).catch(() => {})
+  } else {
+    document.exitFullscreen().then(updateFullscreenState).catch(() => {})
+  }
+}
+
 </script>
 
 <template>
@@ -116,6 +134,18 @@ function toggleDark() {
           <button
             type="button"
             class="rounded-lg p-2 transition-opacity hover:opacity-80"
+            aria-label="Toggle full screen"
+            style="color: var(--color-text-dark);"
+            @click="toggleFullscreen"
+          >
+            <Minimize2 v-if="isFullscreen" class="h-5 w-5" stroke-width="1.5" />
+            <Maximize2 v-else class="h-5 w-5" stroke-width="1.5" />
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="rounded-lg p-2 transition-opacity hover:opacity-80"
             aria-label="Toggle dark mode"
             style="color: var(--color-text-dark);"
             @click="toggleDark"
@@ -142,6 +172,16 @@ function toggleDark() {
             {{ cart.itemCount }}
           </span>
         </router-link>
+        <button
+          type="button"
+          class="rounded-lg p-2"
+          aria-label="Toggle full screen"
+          style="color: var(--color-text-dark);"
+          @click="toggleFullscreen"
+        >
+          <Minimize2 v-if="isFullscreen" class="h-5 w-5" stroke-width="1.5" />
+          <Maximize2 v-else class="h-5 w-5" stroke-width="1.5" />
+        </button>
         <button
           type="button"
           class="rounded-lg p-2"
